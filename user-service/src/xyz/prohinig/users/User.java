@@ -56,6 +56,7 @@ public class User {
                 Objects.equals(lastname, user.lastname);
     }
 
+
     // hashCode can be used to create an integer that will always be the same if fields are the same
     // important for hashset, hashmap
     @Override
