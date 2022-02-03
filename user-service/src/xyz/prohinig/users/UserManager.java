@@ -1,55 +1,18 @@
 package xyz.prohinig.users;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class UserManager {
 
-    // collection is the most general class for collections
-    //    private Collection<User> users = new ArrayList<>();
-    // List is more specific than Collection
-//    private List<User> users = new ArrayList<>();
-
-    // important difference to array -> we don't have to specify size
-    // internally the arraylist uses an array
-    // important characteristic of List: it is ordered
-//    private ArrayList<User> users = new ArrayList<>();
-
-    // there are different implementations of List
-    // finding, removing in lists is slow
-//    private List<User> users = new LinkedList<>();
-    private Collection<User> users = new LinkedList<>();
-    // (!) List/Collections do consume more memory = space than arrays
-
-    // Sets are different to Lists
-    // they do not ensure any order of elements
-    // sets cannot contain the same element twice
-    // hashcode + equals are important to determine if elements are equal
-    // finding by a specific property is slow
-    // removing from Set is very fast
-//    private Collection<User> users = new HashSet<>();
-
-    // Maps allow fast access by a given property
-    // Map<Key, Value> needs 2 types
-    // finding/removing by key is very fast
-    private Map<String, User> usersByUsernameMap = new HashMap<>();
-    private Map<User, User> userByHimselfMap = new HashMap<>();
+    private final Collection<User> users = new ArrayList<>();
 
     public UserManager() {
     }
 
-    // signature is equal (name + parameters), which is why this is not possible
-//    public UserManager() {
-//        this.users = null;
-//    }
-
-    // overload constructor
-    public UserManager(List<User> users) {
-        this.users = users;
-    }
-
     public User getUserByUsername(String username) {
         for (User user : users) {
-            System.out.println("Checking if this is the correct user");
             if (user.getUsername().equals(username)) {
                 return user;
             }
@@ -58,8 +21,59 @@ public class UserManager {
         return null;
     }
 
-    public User getUserByUsernameFast(String username) {
-        return usersByUsernameMap.get(username);
+    public User getUserByUsernameUsingStreams(String username) {
+        return users.stream()
+                .filter(user -> user.getUsername().equals(username))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public Collection<User> getUsersByFirstname(String firstname) {
+        Collection<User> usersResult = new ArrayList<>();
+
+        for (User user: users) {
+            if (user.getFirstname().equals(firstname)) {
+                usersResult.add(user);
+            }
+        }
+
+        return usersResult;
+    }
+
+    public Collection<User> getUsersByFirstnameUsingStreams(String firstname) {
+        return users.stream()
+                .filter(user -> user.getFirstname().equals(firstname))
+                .collect(Collectors.toList());
+    }
+
+    public Collection<User> findUsersByName(String firstname, String lastname) {
+        return users.stream()
+//                .filter(user -> user.getFirstname().equals(firstname) && user.getLastname().equals(lastname))
+                .filter(user -> user.getFirstname().equals(firstname))
+                .filter(user -> user.getLastname().equals(lastname))
+                .collect(Collectors.toList());
+    }
+
+    public Collection<String> getAllUsedUsernames() {
+//        return getAllUsedUsernamesUsingForeach();
+        return getAllUsedUsernamesUsingStreams();
+    }
+
+    private Collection<String> getAllUsedUsernamesUsingForeach() {
+        Collection<String> allUsedUsernames = new HashSet<>();
+
+        for (User user: users) {
+            allUsedUsernames.add(user.getUsername());
+        }
+
+        return allUsedUsernames;
+    }
+
+    private Collection<String> getAllUsedUsernamesUsingStreams() {
+        return users.stream()
+//                .map(user -> user.getUsername())
+                .map(User::getUsername)
+                .collect(Collectors.toSet());
     }
 
     public Collection<User> getUsers() {
@@ -68,14 +82,9 @@ public class UserManager {
 
     public void addUser(User user) {
         users.add(user);
-        usersByUsernameMap.put(user.getUsername(), user);
-        userByHimselfMap.put(user, user);
     }
 
     public void removeUser(User user) {
         users.remove(user);
-        usersByUsernameMap.remove(user.getUsername());
-        userByHimselfMap.remove(user);
-
     }
 }
