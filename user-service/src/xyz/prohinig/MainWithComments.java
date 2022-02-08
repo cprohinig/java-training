@@ -1,7 +1,7 @@
 package xyz.prohinig;
 
 import xyz.prohinig.users.User;
-import xyz.prohinig.users.UserManager;
+import xyz.prohinig.users.UserManagerWithStreamsAndList;
 
 public class MainWithComments {
 
@@ -11,7 +11,7 @@ public class MainWithComments {
         User secondUser = new User("secondusername", "firstname", "lastname");
         Admin admin = new Admin("adminuser", "firstname", "lastname");
 
-        UserManager userManager = new UserManager();
+        UserManagerWithStreamsAndList userManager = new UserManagerWithStreamsAndList();
         userManager.addUser(admin);
 
         userManager.addUser(user);

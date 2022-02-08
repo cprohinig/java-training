@@ -2,16 +2,17 @@ package xyz.prohinig;
 
 import xyz.prohinig.users.User;
 import xyz.prohinig.users.UserManager;
+import xyz.prohinig.users.UserManagerWithForEachAndSet;
 
 import java.util.Collection;
 import java.util.Scanner;
-import java.util.Set;
 
 public class Main {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        UserManager userManager = new UserManager();
+
+        UserManager userManager = new UserManagerWithForEachAndSet();
 
         while (scanner.hasNext()) {
             String userInput = scanner.nextLine();
@@ -41,7 +42,7 @@ public class Main {
             String firstname = userInputArray[2].trim();
             String lastname = userInputArray[3].trim();
 
-            if(isUsernameInUse(username, userManager)) {
+            if (isUsernameInUse(username, userManager)) {
                 System.out.println("Username already in use");
                 continue;
             }
@@ -59,14 +60,11 @@ public class Main {
     }
 
     private static UserOperation getUserOperationFromString(String userOperationString) {
-        switch (userOperationString) {
-            case "ADD":
-                return UserOperation.ADD;
-            case "REMOVE":
-                return UserOperation.REMOVE;
-            default:
-                return null;
-        }
+        return switch (userOperationString) {
+            case "ADD" -> UserOperation.ADD;
+            case "REMOVE" -> UserOperation.REMOVE;
+            default -> null;
+        };
     }
 
     private static void executeUserOperation(
