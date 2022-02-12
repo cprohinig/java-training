@@ -3,6 +3,10 @@ package xyz.prohinig.users;
 import java.util.Collection;
 
 // interface is used to define an "interface" that consumers interact with
+
+/**
+ * UserManager is used to manage users
+ */
 public interface UserManager {
 
     User getUserByUsername(String username);
