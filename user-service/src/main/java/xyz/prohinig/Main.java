@@ -1,5 +1,7 @@
 package xyz.prohinig;
 
+import xyz.prohinig.input.InputExecutor;
+import xyz.prohinig.input.ValidatedInput;
 import xyz.prohinig.users.UserManager;
 import xyz.prohinig.users.UserManagerWithForEachAndSet;
 
@@ -19,11 +21,8 @@ public class Main {
                 break;
             }
 
-            if (!inputExecutor.isInputValid(userInput)) {
-                continue;
-            }
-
-            inputExecutor.execute(userInput);
+            ValidatedInput validatedInput = inputExecutor.validateInput(userInput);
+            inputExecutor.executeIfValid(validatedInput);
         }
 
         System.out.println(userManager.getUsers());

@@ -1,5 +1,6 @@
-package xyz.prohinig;
+package xyz.prohinig.input;
 
+import xyz.prohinig.UserOperation;
 import xyz.prohinig.users.User;
 import xyz.prohinig.users.UserManager;
 
@@ -21,12 +22,12 @@ public class InputExecutor {
         return input.equals("STOP");
     }
 
-    public boolean isInputValid(String input) {
+    public ValidatedInput validateInput(String input) {
         String[] userInputArray = input.split(",");
 
         if (userInputArray.length < 4) {
             System.out.println("Incorrect input. Please use the format: OPERATION,username,firstname,lastname");
-            return false;
+            return ValidatedInput.invalid();
         }
 
         // trim removes whitespaces at the beginning and end of string
@@ -34,34 +35,33 @@ public class InputExecutor {
         UserOperation userOperation = UserOperation.fromInput(operation);
 
         if (userOperation == null) {
-            System.out.println(
-                    String.format("Incorrect input for OPERATION: %s. Possible values: %s, %s", operation,
-                            UserOperation.ADD, UserOperation.REMOVE));
-            return false;
+            System.out.printf("Incorrect input for OPERATION: %s. Possible values: %s, %s%n", operation,
+                    UserOperation.ADD, UserOperation.REMOVE);
+            return ValidatedInput.invalid();
         }
 
         String username = userInputArray[1].trim();
 
         if (isUsernameInUse(username, userManager)) {
             System.out.println("Username already in use");
-            return false;
+            return ValidatedInput.invalid();
         }
 
-        return true;
-    }
-
-    public void execute(String input) {
-        String[] userInputArray = input.split(",");
-
-        // trim removes whitespaces at the beginning and end of string
-        String operation = userInputArray[0].trim();
-        UserOperation userOperation = UserOperation.fromInput(operation);
-
-        String username = userInputArray[1].trim();
         String firstname = userInputArray[2].trim();
         String lastname = userInputArray[3].trim();
 
-        executeUserOperation(userOperation, new User(username, firstname, lastname));
+        return ValidatedInput.valid(username, firstname, lastname, userOperation);
+    }
+
+    public void executeIfValid(ValidatedInput validatedInput) {
+        if (validatedInput.isValid()) {
+            executeUserOperation(validatedInput.getUserOperation(),
+                    new User(
+                            validatedInput.getUsername(),
+                            validatedInput.getFirstname(),
+                            validatedInput.getLastname()
+                    ));
+        }
     }
 
     private boolean isUsernameInUse(String username, UserManager userManager) {
