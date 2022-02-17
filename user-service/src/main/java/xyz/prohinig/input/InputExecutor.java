@@ -4,8 +4,13 @@ import xyz.prohinig.UserOperation;
 import xyz.prohinig.users.User;
 import xyz.prohinig.users.UserManager;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Collection;
 
+import static java.util.Objects.requireNonNull;
+
+@ParametersAreNonnullByDefault
 public class InputExecutor {
 
     // there is a dependency to the userManager, so it has to be part of the input executor
@@ -15,11 +20,13 @@ public class InputExecutor {
     // instantiating dependencies inside a class is in general BAD
     // important to be able to define which instance is used
     public InputExecutor(UserManager userManager) {
-        this.userManager = userManager;
+        // enforce @ParametersAreNonnullByDefault
+        this.userManager = requireNonNull(userManager, "userManager");
+//        this.userManager = userManager;
     }
 
-    public boolean shouldStop(String input) {
-        return input.equals("STOP");
+    public boolean shouldStop(@CheckForNull String input) {
+        return "STOP".equals(input);
     }
 
     public ValidatedInput validateInput(String input) {
