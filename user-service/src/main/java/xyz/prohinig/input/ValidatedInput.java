@@ -3,6 +3,8 @@ package xyz.prohinig.input;
 import xyz.prohinig.UserOperation;
 
 public class ValidatedInput {
+    private static final ValidatedInput INVALID_INPUT = new ValidatedInput(null, null, null, null, false);
+
     private final String username;
     private final String firstname;
     private final String lastname;
@@ -18,7 +20,7 @@ public class ValidatedInput {
     }
 
     static ValidatedInput invalid() {
-        return new ValidatedInput(null, null, null, null, false);
+        return INVALID_INPUT;
     }
 
     static ValidatedInput valid(String username, String firstname, String lastname, UserOperation userOperation) {
@@ -44,4 +46,17 @@ public class ValidatedInput {
     public boolean isValid() {
         return isValid;
     }
+
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//        ValidatedInput that = (ValidatedInput) o;
+//        return isValid == that.isValid && Objects.equals(username, that.username) && Objects.equals(firstname, that.firstname) && Objects.equals(lastname, that.lastname) && userOperation == that.userOperation;
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(username, firstname, lastname, userOperation, isValid);
+//    }
 }

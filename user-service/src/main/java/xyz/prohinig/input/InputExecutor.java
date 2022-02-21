@@ -1,5 +1,6 @@
 package xyz.prohinig.input;
 
+import com.google.common.annotations.VisibleForTesting;
 import xyz.prohinig.UserOperation;
 import xyz.prohinig.users.User;
 import xyz.prohinig.users.UserManager;
@@ -12,6 +13,9 @@ import static java.util.Objects.requireNonNull;
 
 @ParametersAreNonnullByDefault
 public class InputExecutor {
+
+    @VisibleForTesting
+    static final String STOP_INPUT = "STOP";
 
     // there is a dependency to the userManager, so it has to be part of the input executor
     private final UserManager userManager;
@@ -26,7 +30,7 @@ public class InputExecutor {
     }
 
     public boolean shouldStop(@CheckForNull String input) {
-        return "STOP".equals(input);
+        return STOP_INPUT.equals(input);
     }
 
     public ValidatedInput validateInput(String input) {
