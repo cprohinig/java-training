@@ -34,10 +34,11 @@ public class UserManagerWithStreamsAndList implements UserManager {
     }
 
     @Override
-    public Collection<String> getAllUsedUsernames() {
+    public boolean isUsernameInUse(String username) {
         return users.stream()
-                .map(User::getUsername)
-                .collect(Collectors.toSet());
+                .filter(user -> user.getUsername().equals(username))
+                .findFirst()
+                .orElse(null) != null;
     }
 
     @Override

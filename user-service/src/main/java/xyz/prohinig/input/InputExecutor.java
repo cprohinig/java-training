@@ -53,7 +53,7 @@ public class InputExecutor {
 
         String username = userInputArray[1].trim();
 
-        if (isUsernameInUse(username, userManager)) {
+        if (userManager.isUsernameInUse(username)) {
             System.out.println("Username already in use");
             return ValidatedInput.invalid();
         }
@@ -73,12 +73,6 @@ public class InputExecutor {
                             validatedInput.getLastname()
                     ));
         }
-    }
-
-    private boolean isUsernameInUse(String username, UserManager userManager) {
-        Collection<String> usedUsernames = userManager.getAllUsedUsernames();
-
-        return usedUsernames.contains(username);
     }
 
     private void executeUserOperation(

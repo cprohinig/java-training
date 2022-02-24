@@ -46,14 +46,13 @@ public class UserManagerWithForEachAndSet implements UserManager {
     }
 
     @Override
-    public Collection<String> getAllUsedUsernames() {
-        Collection<String> usedUsernames = new HashSet<>();
-
-        for (User user : userCollection) {
-            usedUsernames.add(user.getUsername());
-        }
-
-        return usedUsernames;
+    public boolean isUsernameInUse(String username) {
+//        for (User user : userCollection) {
+//            if (user.getUsername().equals(username)) {
+//                return true;
+//            }
+//        }
+        return false;
     }
 
     @Override

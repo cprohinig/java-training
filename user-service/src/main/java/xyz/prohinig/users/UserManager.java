@@ -15,7 +15,7 @@ public interface UserManager {
 
     Collection<User> getUsersByName(String firstname, String lastname);
 
-    Collection<String> getAllUsedUsernames();
+    boolean isUsernameInUse(String username);
 
     Collection<User> getUsers();
 
