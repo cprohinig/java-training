@@ -7,7 +7,6 @@ import xyz.prohinig.users.UserManager;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Collection;
 
 import static java.util.Objects.requireNonNull;
 
@@ -26,6 +25,7 @@ public class InputExecutor {
     public InputExecutor(UserManager userManager) {
         // enforce @ParametersAreNonnullByDefault
         this.userManager = requireNonNull(userManager, "userManager");
+//        this.userManager = userManager;
 //        this.userManager = userManager;
     }
 

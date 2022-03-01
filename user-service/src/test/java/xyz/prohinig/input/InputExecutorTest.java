@@ -1,40 +1,42 @@
 package xyz.prohinig.input;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import xyz.prohinig.users.User;
+import xyz.prohinig.UserOperation;
 import xyz.prohinig.users.UserManager;
-import xyz.prohinig.users.UserManagerWithForEachAndSet;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class InputExecutorTest {
+    public static final String USERNAME = "uname";
+    public static final String FIRSTNAME = "firstname";
+    public static final String LASTNAME = "lastname";
+    public static final UserOperation USER_OPERATION_ADD = UserOperation.ADD;
 
     // could lead to problems as all tests share the same instance and dependency
     // could lead to previous test methods affecting tests executed afterwards
 //    private InputExecutor inputExecutor = new InputExecutor(new UserManagerWithForEachAndSet());
+//    private InputExecutor inputExecutor;
 
-    private UserManager userManager;
-    private InputExecutor inputExecutor;
-
-    private InputExecutor inputExecutorWithMock;
-
+    // @Mock is used on a field to tell mockito to create a mock instance of this class
     @Mock
     private UserManager userManagerMock;
 
-    @BeforeEach
-    void setUp() {
-        userManager = new UserManagerWithForEachAndSet();
-        inputExecutor = new InputExecutor(userManager);
-        inputExecutorWithMock = new InputExecutor(userManagerMock);
-    }
+    // @InjectMocks is automatically creating an instance of the class and injecting all mocks previously created with @Mock
+    @InjectMocks
+    private InputExecutor inputExecutor;
+
+    //    @BeforeEach
+//    void setUp() {
+//        inputExecutor = new InputExecutor(userManagerMock);
+//    }
 
     @Test
     void shouldStop_returnsTrueWhenInputEqualsSTOP() {
@@ -70,33 +72,72 @@ class InputExecutorTest {
         assertEquals(ValidatedInput.invalid(), result);
     }
 
+
     @Test
     void validateInput_returnsInvalidInputWhenUsernameIsInUse() {
-        // preferred structure for tests with dependencies
-
         // given
-        String usedUserName = "username2";
-        // implicitly we are testing the usermanager because we just know that we are calling
-        // isUsernameInUse but depend on it returning true after adding this user
-        userManager.addUser(new User(usedUserName, "", ""));
+        // "stubbing" of methods is used to tell the mock instance how to behave when specifc methods are called
+        // private methods cannot be stubbed
+        // when no stubbing for a method is defined the "default" value is returned. false for boolean, null for any object, ...
+        when(userManagerMock.isUsernameInUse(any())).thenReturn(true);
+
+        // mock creation with mock method, very similar to instance obtained with @Mock annotation
+//        User userMock = mock(User.class);
+        // lenient makes mockito ignore unnecessary stubbings, very rarely using it is a good idea
+//        lenient().when(userManagerMock.getUserByUsername(usedUserName)).thenReturn(userMock);
 
         // when
-        ValidatedInput result = inputExecutor.validateInput("ADD," + usedUserName + ",1,1");
+        ValidatedInput result = inputExecutor.validateInput("ADD," + USERNAME + ",1,1");
 
         // then
         assertEquals(ValidatedInput.invalid(), result);
+        // verify is used that a mocks method was called with a given parameter
+        verify(userManagerMock).isUsernameInUse(USERNAME);
     }
 
     @Test
-    void validateInput_returnsInvalidInputWhenUsernameIsInUseWithMock() {
+    void validateInput_passesCorrectUsernameToUserManager() {
         // given
         String usedUserName = "username";
-        when(userManagerMock.isUsernameInUse(usedUserName)).thenReturn(true);
 
         // when
-        ValidatedInput result = inputExecutorWithMock.validateInput("ADD," + usedUserName + ",1,1");
+        inputExecutor.validateInput("ADD," + usedUserName + ",1,1");
 
         // then
-        assertEquals(ValidatedInput.invalid(), result);
+        verify(userManagerMock).isUsernameInUse(usedUserName);
+    }
+
+    @Test
+    void validateInput_returnsValidatedInputWhenValidInputIsPassed() {
+        // given
+        when(userManagerMock.isUsernameInUse(any())).thenReturn(false);
+        // different values should be used for different parameters of same type
+        String input = USER_OPERATION_ADD.getInput() + "," + USERNAME + "," + FIRSTNAME + "," + LASTNAME;
+
+        // when
+        ValidatedInput result = inputExecutor.validateInput(input);
+
+        // then
+        assertEquals(ValidatedInput.valid(USERNAME, FIRSTNAME, LASTNAME, USER_OPERATION_ADD), result);
+    }
+
+    @Test
+    void validateInput_trimsAllPassedInput() {
+        // given
+        when(userManagerMock.isUsernameInUse(any())).thenReturn(false);
+        // different values should be used for different parameters of same type
+        String username = "   " + USERNAME + "   ";
+        String firstname = FIRSTNAME + "   ";
+        String lastname = "    " + LASTNAME;
+        String userOperationInput = USER_OPERATION_ADD.getInput() + "                                   ";
+        String input = userOperationInput + ","
+                + username + ","
+                + firstname + "," +
+                lastname;
+        // when
+        ValidatedInput result = inputExecutor.validateInput(input);
+
+        // then
+        assertEquals(ValidatedInput.valid(USERNAME, FIRSTNAME, LASTNAME, USER_OPERATION_ADD), result);
     }
 }

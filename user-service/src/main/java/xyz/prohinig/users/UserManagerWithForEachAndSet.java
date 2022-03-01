@@ -47,11 +47,11 @@ public class UserManagerWithForEachAndSet implements UserManager {
 
     @Override
     public boolean isUsernameInUse(String username) {
-//        for (User user : userCollection) {
-//            if (user.getUsername().equals(username)) {
-//                return true;
-//            }
-//        }
+        for (User user : userCollection) {
+            if (user.getUsername().equals(username)) {
+                return true;
+            }
+        }
         return false;
     }
 
